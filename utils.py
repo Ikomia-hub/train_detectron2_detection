@@ -25,7 +25,8 @@ class MyTrainer(DefaultTrainer):
     eval_period = 0
     thing_dataset_id_to_contiguous_id = None
 
-    def __init__(self, cfg, tb_dir, output_dir, stop_train, log_metrics, update_progress, thing_dataset_id_to_contiguous_id):
+    def __init__(self, cfg, tb_dir, output_dir, stop_train, log_metrics, update_progress,
+                 thing_dataset_id_to_contiguous_id):
         super().__init__(cfg)
         MyTrainer.tensorboard_dir = tb_dir
         MyTrainer.output_dir = output_dir
@@ -75,7 +76,9 @@ class MyTrainer(DefaultTrainer):
                     self.after_step()
                     self.update_progress()
                     if self.iter % 20 == 0:
-                        self.log_metrics({name.replace("@", "_"): value[0] for name, value in self.storage.latest().items()}, step=self.iter)
+                        self.log_metrics(
+                            {name.replace("@", "_"): value[0] for name, value in self.storage.latest().items()},
+                            step=self.iter)
                     if self.stop_train():
                         logger.info("Training stopped by user at iteration {}".format(self.iter))
                         with open(os.path.join(self.output_dir, "model_final.pth"), "w") as f:
@@ -151,8 +154,6 @@ def register_dataset(dataset_name, images, metadata):
     MetadataCatalog.get(dataset_name).thing_dataset_id_to_contiguous_id = metadata["thing_dataset_id_to_contiguous_id"]
 
     MetadataCatalog.get(dataset_name).thing_classes = metadata["thing_classes"]
-
-
 
 
 def register_datasets(data, split):
