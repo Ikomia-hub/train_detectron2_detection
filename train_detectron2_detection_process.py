@@ -30,6 +30,7 @@ from detectron2.utils.logger import setup_logger
 setup_logger()
 import os
 import copy
+from ikomia.core import config as ikcfg
 
 # import some common detectron2 utilities
 from detectron2 import model_zoo
@@ -141,7 +142,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
         # Get parameters :
         param = self.getParam()
 
-        tb_logdir = self.getTensorboardLogDir() + "/" + param.cfg["model_name"] + "/" + str_datetime
+        tb_logdir = os.path.join(ikcfg.main_cfg["tensorboard"]["log_uri"], str_datetime)
 
         if not param.cfg["custom_cfg"]:
             out_dir = param.cfg["output_folder"] + "/" + str_datetime
