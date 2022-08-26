@@ -152,7 +152,9 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
             cfg.merge_from_file(config_path)
             # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
             if not param.cfg["pretrained"]:
-                cfg.MODEL.WEIGHTS = None # model_zoo.get_checkpoint_url(param.cfg["model_name"] + ".yaml")
+                cfg.MODEL.WEIGHTS = None
+            else:
+                model_zoo.get_checkpoint_url((param.cfg["model_name"] + ".yaml").replace("\\", "/"))
             cfg.INPUT.MAX_SIZE_TEST = param.cfg["input_size"]
             cfg.INPUT.MAX_SIZE_TRAIN = param.cfg["input_size"]
             cfg.SOLVER.IMS_PER_BATCH = param.cfg["batch_size"]
