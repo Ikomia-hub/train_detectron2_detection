@@ -26,6 +26,7 @@ import os
 import detectron2
 from detectron2 import model_zoo
 
+
 # --------------------
 # - Class which implements widget associated with the process
 # - Inherits PyCore.CWorkflowTaskWidget from Ikomia API
@@ -51,7 +52,7 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
             for name in files:
                 file_path = os.path.join(root, name)
                 possible_cfg = os.path.join(*file_path.split(os.path.sep)[-2:])
-                if "Detection" in possible_cfg and possible_cfg.endswith('.yaml') and "Base" not in possible_cfg\
+                if "Detection" in possible_cfg and possible_cfg.endswith('.yaml') and "Base" not in possible_cfg \
                         and "rpn" not in possible_cfg:
                     try:
                         model_zoo.get_checkpoint_url(possible_cfg.replace('\\', '/'))
@@ -73,9 +74,9 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
         self.spin_batch_size = pyqtutils.append_spin(self.gridLayout, "Batch size",
                                                      self.parameters.cfg["batch_size"])
         # Split train/test
-        self.slider_split = pyqtutils.append_slider(self.gridLayout, "Split train/test (%)",
-                                                    round(100 * self.parameters.cfg["split_train_test"]), min=0,
-                                                    max=100)
+        self.spin_split = pyqtutils.append_spin(self.gridLayout, "Split train/test (%)",
+                                                round(100 * self.parameters.cfg["split_train_test"]), min=0,
+                                                max=100)
         # Pretrain
         self.check_pretrained = pyqtutils.append_check(self.gridLayout, "Pretrained on Imagenet",
                                                        self.parameters.cfg["pretrained"])
@@ -97,7 +98,7 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
                                                               self.parameters.cfg["cfg_path"])
         # Disable unused widgets when custom config checkbox is checked
         self.browse_custom_cfg.setEnabled(self.check_custom_cfg.isChecked())
-        self.slider_split.setEnabled(not self.check_custom_cfg.isChecked())
+        self.spin_split.setEnabled(not self.check_custom_cfg.isChecked())
         self.double_spin_lr.setEnabled(not self.check_custom_cfg.isChecked())
         self.browse_output_folder.setEnabled(not self.check_custom_cfg.isChecked())
         self.check_pretrained.setEnabled(not self.check_custom_cfg.isChecked())
@@ -114,7 +115,7 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
         self.setLayout(layout_ptr)
 
     def on_check(self, int):
-        self.slider_split.setEnabled(not self.check_custom_cfg.isChecked())
+        self.spin_split.setEnabled(not self.check_custom_cfg.isChecked())
         self.double_spin_lr.setEnabled(not self.check_custom_cfg.isChecked())
         self.browse_output_folder.setEnabled(not self.check_custom_cfg.isChecked())
         self.check_pretrained.setEnabled(not self.check_custom_cfg.isChecked())
@@ -139,7 +140,7 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
         self.parameters.cfg["pretrained"] = self.check_pretrained.isChecked()
         self.parameters.cfg["output_folder"] = self.browse_output_folder.path
         self.parameters.cfg["learning_rate"] = self.double_spin_lr.value()
-        self.parameters.cfg["split_train_test"] = self.slider_split.value() / 100
+        self.parameters.cfg["split_train_test"] = self.spin_split.value() / 100
         self.parameters.cfg["eval_period"] = self.spin_eval_period.value()
 
         # Send signal to launch the process
