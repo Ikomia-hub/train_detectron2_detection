@@ -20,18 +20,10 @@ import random
 
 
 class MyTrainer(DefaultTrainer):
-    tensorboard_dir = ""
-    output_dir = ""
-    eval_period = 0
-    thing_dataset_id_to_contiguous_id = None
 
-    def __init__(self, cfg, tb_dir, output_dir, stop_train, log_metrics, update_progress,
-                 thing_dataset_id_to_contiguous_id):
+    def __init__(self, cfg, tb_dir, stop_train, log_metrics, update_progress):
+        self.tensorboard_dir = tb_dir
         super().__init__(cfg)
-        MyTrainer.tensorboard_dir = tb_dir
-        MyTrainer.output_dir = output_dir
-        MyTrainer.eval_period = cfg.TEST.EVAL_PERIOD
-        MyTrainer.thing_dataset_id_to_contiguous_id = thing_dataset_id_to_contiguous_id
         self.stop_train = stop_train
         self.log_metrics = log_metrics
         self.update_progress = update_progress
@@ -46,15 +38,14 @@ class MyTrainer(DefaultTrainer):
 
     @classmethod
     def build_evaluator(cls, cfg, dataset_name):
-        return COCOEvaluator(dataset_name, distributed=False, output_dir=cls.output_dir)
+        return COCOEvaluator(dataset_name, distributed=False, output_dir=cfg.OUTPUT_DIR)
 
-    @classmethod
-    def build_writers(cls):
-        return [TensorboardXWriter(cls.tensorboard_dir)]
+    def build_writers(self):
+        return [TensorboardXWriter(self.tensorboard_dir)]
 
     def build_hooks(self):
         ret = super().build_hooks()
-        ret.append(BestCheckpointer(eval_period=self.eval_period,
+        ret.append(BestCheckpointer(eval_period=self.cfg.TEST.EVAL_PERIOD,
                                     checkpointer=self.checkpointer,
                                     val_metric="bbox/AP",
                                     mode="max",
@@ -81,7 +72,7 @@ class MyTrainer(DefaultTrainer):
                             step=self.iter)
                     if self.stop_train():
                         logger.info("Training stopped by user at iteration {}".format(self.iter))
-                        with open(os.path.join(self.output_dir, "model_final.pth"), "w") as f:
+                        with open(os.path.join(self.cfg.OUTPUT_DIR, "model_final.pth"), "w") as f:
                             f.write("")
                         self.checkpointer.save("model_final")
                         break

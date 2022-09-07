@@ -186,13 +186,12 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
         cfg.CLASS_NAMES = MetadataCatalog.get(cfg.DATASETS.TRAIN[0]).get("thing_classes")
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg.CLASS_NAMES)
         cfg.MODEL.RETINANET.NUM_CLASSES = len(cfg.CLASS_NAMES)
-        thing_dataset_id_to_contiguous_id = MetadataCatalog.get(cfg.DATASETS.TRAIN[0]).get("thing_dataset_id_to_contiguous_id")
         self.advancement = 0
         self.epochs_todo = cfg.SOLVER.MAX_ITER
         self.epochs_done = 0
         with open(os.path.join(out_dir, "config.yaml"), 'w') as f:
             f.write(cfg.dump())
-        trainer = MyTrainer(cfg, tb_logdir, out_dir, self.get_stop_train, self.log_metrics, self.update_progress, thing_dataset_id_to_contiguous_id)
+        trainer = MyTrainer(cfg, tb_logdir, self.get_stop_train, self.log_metrics, self.update_progress)
         if param.cfg["pretrained"]:
             trainer.resume_or_load(resume=False)  # load MODEL.WEIGHTS
         trainer.train()
