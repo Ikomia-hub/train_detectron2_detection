@@ -49,50 +49,47 @@ class TrainDetectron2DetectionParam(TaskParam):
     def __init__(self):
         TaskParam.__init__(self)
         # Place default value initialization here
-        # Example : self.windowSize = 25
         self.cfg["model_name"] = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
-        self.cfg["custom_cfg"] = False
-        self.cfg["cfg_path"] = ""
+        self.cfg["use_custom_cfg"] = False
+        self.cfg["config"] = ""
         self.cfg["max_iter"] = 100
         self.cfg["batch_size"] = 2
         self.cfg["input_size"] = 400
-        self.cfg["pretrained"] = True
+        self.cfg["use_pretrained"] = True
         self.cfg["output_folder"] = os.path.dirname(__file__) + "/runs"
         self.cfg["learning_rate"] = 0.0025
-        self.cfg["split_train_test"] = 0.8
+        self.cfg["dataset_split_ratio"] = 0.8
         self.cfg["eval_period"] = 50
 
     def set_values(self, param_map):
         # Set parameters values from Ikomia application
         # Parameters values are stored as string and accessible like a python dict
-        # Example : self.windowSize = int(param_map["windowSize"])
         self.cfg["model_name"] = param_map["model_name"]
-        self.cfg["custom_cfg"] = eval(param_map["custom_cfg"])
-        self.cfg["cfg_path"] = param_map["cfg_path"]
+        self.cfg["use_custom_cfg"] = eval(param_map["use_custom_cfg"])
+        self.cfg["config"] = param_map["config"]
         self.cfg["max_iter"] = int(param_map["max_iter"])
         self.cfg["batch_size"] = int(param_map["batch_size"])
         self.cfg["input_size"] = int(param_map["input_size"])
-        self.cfg["pretrained"] = eval(param_map["pretrained"])
+        self.cfg["use_pretrained"] = eval(param_map["use_pretrained"])
         self.cfg["output_folder"] = param_map["output_folder"]
         self.cfg["learning_rate"] = float(param_map["learning_rate"])
-        self.cfg["split_train_test"] = float(param_map["split_train_test"])
+        self.cfg["dataset_split_ratio"] = float(param_map["dataset_split_ratio"])
         self.cfg["eval_period"] = int(param_map["eval_period"])
 
     def get_values(self):
         # Send parameters values to Ikomia application
         # Create the specific dict structure (string container)
         param_map = {}
-        # Example : paramMap["windowSize"] = str(self.windowSize)
         param_map["model_name"] = self.cfg["model_name"]
-        param_map["custom_cfg"] = str(self.cfg["custom_cfg"])
-        param_map["cfg_path"] = self.cfg["cfg_path"]
+        param_map["use_custom_cfg"] = str(self.cfg["use_custom_cfg"])
+        param_map["config"] = self.cfg["config"]
         param_map["max_iter"] = str(self.cfg["max_iter"])
         param_map["batch_size"] = str(self.cfg["batch_size"])
         param_map["input_size"] = str(self.cfg["input_size"])
-        param_map["pretrained"] = str(self.cfg["pretrained"])
+        param_map["use_pretrained"] = str(self.cfg["use_pretrained"])
         param_map["output_folder"] = self.cfg["output_folder"]
         param_map["learning_rate"] = str(self.cfg["learning_rate"])
-        param_map["split_train_test"] = str(self.cfg["split_train_test"])
+        param_map["dataset_split_ratio"] = str(self.cfg["dataset_split_ratio"])
         param_map["eval_period"] = str(self.cfg["eval_period"])
         return param_map
 
@@ -144,7 +141,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
 
         tb_logdir = os.path.join(ikcfg.main_cfg["tensorboard"]["log_uri"], str_datetime)
 
-        if not param.cfg["custom_cfg"]:
+        if not param.cfg["use_custom_cfg"]:
             out_dir = param.cfg["output_folder"] + "/" + str_datetime
 
             cfg = get_cfg()
@@ -152,7 +149,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
                                        param.cfg["model_name"] + '.yaml')
             cfg.merge_from_file(config_path)
             # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
-            if not param.cfg["pretrained"]:
+            if not param.cfg["use_pretrained"]:
                 cfg.MODEL.WEIGHTS = None
             else:
                 model_zoo.get_checkpoint_url((param.cfg["model_name"] + ".yaml").replace("\\", "/"))
@@ -168,13 +165,13 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
             cfg.OUTPUT_DIR = out_dir
 
         else:
-            if os.path.isfile(param.cfg["cfg_path"]):
-                with open(param.cfg["cfg_path"], 'r') as file:
+            if os.path.isfile(param.cfg["config"]):
+                with open(param.cfg["config"], 'r') as file:
                     cfg_data = file.read()
                     cfg = CfgNode.load_cfg(cfg_data)
                     out_dir = cfg.OUTPUT_DIR
             else:
-                print("Unable to load config file {}".format(param.cfg["cfg_path"]))
+                print("Unable to load config file {}".format(param.cfg["config"]))
                 self.end_task_run()
 
         os.makedirs(out_dir, exist_ok=True)
@@ -182,7 +179,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
         # Fixed dataset names
         cfg.DATASETS.TRAIN = ("TrainDetectionDataset",)
         cfg.DATASETS.TEST = ("TestDetectionDataset",)
-        register_datasets(ik_dataset.data, param.cfg["split_train_test"])
+        register_datasets(ik_dataset.data, param.cfg["dataset_split_ratio"])
         cfg.CLASS_NAMES = MetadataCatalog.get(cfg.DATASETS.TRAIN[0]).get("thing_classes")
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg.CLASS_NAMES)
         cfg.MODEL.RETINANET.NUM_CLASSES = len(cfg.CLASS_NAMES)
@@ -192,7 +189,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
         with open(os.path.join(out_dir, "config.yaml"), 'w') as f:
             f.write(cfg.dump())
         trainer = MyTrainer(cfg, tb_logdir, self.get_stop_train, self.log_metrics, self.update_progress)
-        if param.cfg["pretrained"]:
+        if param.cfg["use_pretrained"]:
             trainer.resume_or_load(resume=False)  # load MODEL.WEIGHTS
         trainer.train()
 
