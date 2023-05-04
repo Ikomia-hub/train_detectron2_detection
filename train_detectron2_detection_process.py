@@ -49,7 +49,7 @@ class TrainDetectron2DetectionParam(TaskParam):
     def __init__(self):
         TaskParam.__init__(self)
         # Place default value initialization here
-        self.cfg["model_name"] = "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml"
+        self.cfg["model_name"] = "COCO-Detection/faster_rcnn_R_101_FPN_3x"
         self.cfg["use_custom_cfg"] = False
         self.cfg["config"] = ""
         self.cfg["max_iter"] = 100
@@ -79,18 +79,19 @@ class TrainDetectron2DetectionParam(TaskParam):
     def get_values(self):
         # Send parameters values to Ikomia application
         # Create the specific dict structure (string container)
-        param_map = {}
-        param_map["model_name"] = self.cfg["model_name"]
-        param_map["use_custom_cfg"] = str(self.cfg["use_custom_cfg"])
-        param_map["config"] = self.cfg["config"]
-        param_map["max_iter"] = str(self.cfg["max_iter"])
-        param_map["batch_size"] = str(self.cfg["batch_size"])
-        param_map["input_size"] = str(self.cfg["input_size"])
-        param_map["use_pretrained"] = str(self.cfg["use_pretrained"])
-        param_map["output_folder"] = self.cfg["output_folder"]
-        param_map["learning_rate"] = str(self.cfg["learning_rate"])
-        param_map["dataset_split_ratio"] = str(self.cfg["dataset_split_ratio"])
-        param_map["eval_period"] = str(self.cfg["eval_period"])
+        param_map = {
+            "model_name": self.cfg["model_name"],
+            "use_custom_cfg": str(self.cfg["use_custom_cfg"]),
+            "config": self.cfg["config"],
+            "max_iter": str(self.cfg["max_iter"]),
+            "batch_size": str(self.cfg["batch_size"]),
+            "input_size": str(self.cfg["input_size"]),
+            "use_pretrained": str(self.cfg["use_pretrained"]),
+            "output_folder": self.cfg["output_folder"],
+            "learning_rate": str(self.cfg["learning_rate"]),
+            "dataset_split_ratio": str(self.cfg["dataset_split_ratio"]),
+            "eval_period": str(self.cfg["eval_period"])
+        }
         return param_map
 
 
