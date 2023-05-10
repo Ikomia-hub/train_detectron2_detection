@@ -51,7 +51,7 @@ class TrainDetectron2DetectionParam(TaskParam):
         # Place default value initialization here
         self.cfg["model_name"] = "COCO-Detection/faster_rcnn_R_101_FPN_3x"
         self.cfg["use_custom_cfg"] = False
-        self.cfg["config"] = ""
+        self.cfg["config_file"] = ""
         self.cfg["max_iter"] = 100
         self.cfg["batch_size"] = 2
         self.cfg["input_size"] = 400
@@ -66,7 +66,7 @@ class TrainDetectron2DetectionParam(TaskParam):
         # Parameters values are stored as string and accessible like a python dict
         self.cfg["model_name"] = param_map["model_name"]
         self.cfg["use_custom_cfg"] = eval(param_map["use_custom_cfg"])
-        self.cfg["config"] = param_map["config"]
+        self.cfg["config_file"] = param_map["config_file"]
         self.cfg["max_iter"] = int(param_map["max_iter"])
         self.cfg["batch_size"] = int(param_map["batch_size"])
         self.cfg["input_size"] = int(param_map["input_size"])
@@ -82,7 +82,7 @@ class TrainDetectron2DetectionParam(TaskParam):
         param_map = {
             "model_name": self.cfg["model_name"],
             "use_custom_cfg": str(self.cfg["use_custom_cfg"]),
-            "config": self.cfg["config"],
+            "config_file": self.cfg["config_file"],
             "max_iter": str(self.cfg["max_iter"]),
             "batch_size": str(self.cfg["batch_size"]),
             "input_size": str(self.cfg["input_size"]),
@@ -166,13 +166,13 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
             cfg.OUTPUT_DIR = out_dir
 
         else:
-            if os.path.isfile(param.cfg["config"]):
-                with open(param.cfg["config"], 'r') as file:
+            if os.path.isfile(param.cfg["config_file"]):
+                with open(param.cfg["config_file"], 'r') as file:
                     cfg_data = file.read()
                     cfg = CfgNode.load_cfg(cfg_data)
                     out_dir = cfg.OUTPUT_DIR
             else:
-                print("Unable to load config file {}".format(param.cfg["config"]))
+                print("Unable to load config file {}".format(param.cfg["config_file"]))
                 self.end_task_run()
 
         os.makedirs(out_dir, exist_ok=True)
@@ -187,7 +187,7 @@ class TrainDetectron2Detection(dnntrain.TrainProcess):
         self.advancement = 0
         self.epochs_todo = cfg.SOLVER.MAX_ITER
         self.epochs_done = 0
-        with open(os.path.join(out_dir, "config.yaml"), 'w') as f:
+        with open(os.path.join(out_dir, "config_file.yaml"), 'w') as f:
             f.write(cfg.dump())
         trainer = MyTrainer(cfg, tb_logdir, self.get_stop_train, self.log_metrics, self.update_progress)
         if param.cfg["use_pretrained"]:
