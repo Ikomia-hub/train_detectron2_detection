@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="images/icon.png" alt="Algorithm icon">
+  <img src="images/detectron2.png" alt="Algorithm icon">
   <h1 align="center">train_detectron2_detection</h1>
 </div>
 <br />
