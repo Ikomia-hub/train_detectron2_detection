@@ -61,6 +61,7 @@ class TrainDetectron2DetectionWidget(core.CWorkflowTaskWidget):
                     available_cfg.append(possible_cfg.replace('.yaml', ''))
         self.combo_model = pyqtutils.append_combo(self.gridLayout, "Model Name")
         for model_name in available_cfg:
+            print(model_name)
             self.combo_model.addItem(model_name)
         self.combo_model.setCurrentText(self.parameters.cfg["model_name"])
         # Input size
