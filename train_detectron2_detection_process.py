@@ -219,7 +219,6 @@ class TrainDetectron2DetectionFactory(dataprocess.CTaskFactory):
         # Set process information as string here
         self.info.name = "train_detectron2_detection"
         self.info.short_description = "Train for Detectron2 detection models"
-        self.info.description = "Train for Detectron2 detection models"
         # relative path -> as displayed in Ikomia application process tree
         self.info.path = "Plugins/Python/Detection"
         self.info.version = "1.1.0"
@@ -232,7 +231,8 @@ class TrainDetectron2DetectionFactory(dataprocess.CTaskFactory):
         # URL of documentation
         self.info.documentation_link = "https://detectron2.readthedocs.io/en/latest/"
         # Code source repository
-        self.info.repository = "https://github.com/facebookresearch/detectron2"
+        self.info.repository = "https://github.com/Ikomia-hub/train_detectron2_detection"
+        self.info.original_repository = "https://github.com/facebookresearch/detectron2"
         # Keywords used for search
         self.info.keywords = "train, detectron2, object, detection"
 
