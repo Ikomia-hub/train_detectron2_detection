@@ -21,7 +21,7 @@
 
 Train your custom Detectron2 object detection models.
 
-![Desk object detection](https://raw.githubusercontent.com/Ikomia-hub/train_detectron2_detection/feat/new_readme/icons/output.jpg)
+![Desk object detection](https://raw.githubusercontent.com/Ikomia-hub/train_detectron2_detection/main/icons/output.jpg)
 
 
 ## :rocket: Use with Ikomia API
