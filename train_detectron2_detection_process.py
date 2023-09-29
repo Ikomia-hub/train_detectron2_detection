@@ -235,6 +235,8 @@ class TrainDetectron2DetectionFactory(dataprocess.CTaskFactory):
         self.info.original_repository = "https://github.com/facebookresearch/detectron2"
         # Keywords used for search
         self.info.keywords = "train, detectron2, object, detection"
+        self.info.algo_type = core.AlgoType.TRAIN
+        self.info.algo_tasks = "OBJECT_DETECTION"
 
     def create(self, param=None):
         # Create process object
